@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple URL Shortener</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        h1, h2 { color: #333; }
+        form div { margin-bottom: 10px; }
+        input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+        input[type="submit"] { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 15px; background-color: #e9f7ef; border: 1px solid #b7e4c7; border-radius: 4px; }
+        .result p { margin: 5px 0; }
+        .result a { color: #0056b3; text-decoration: none; font-weight: bold; }
+        .result a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<h1>Welcome to the URL Shortener!</h1>
+<form th:action="@{/shorten-web}" method="POST">
+    <!-- --- HIGHLIGHTED CHANGE END --- -->
+    <div>
+        <label for="longUrl">Enter a long URL to shorten:</label>
+    </div>
+    <div>
+        <input type="text" id="longUrl" name="longUrl" size="50" placeholder="https://example.com/very/long/url" required>
+    </div>
+    <div>
+        <label for=\"customAlias\">Enter a custom alias (optional):</label>
+    </div>
+    <div>
+        <input type=\"text\" id=\"customAlias\" name=\"customAlias\" size=\"50\" placeholder=\"e.g., my-awesome-event\">
+    </div>
+    <div>
+        <input type="submit" value="Shorten URL">
+    </div>
+</form>
+
+<div class="result" th:if="${shortUrlResult != null}">
+    <h2>Success! Here is your short URL:</h2>
+
+    <p>
+        Original URL:
+        <span th:text="${originalUrl}">https://example.com/original-url-goes-here</span>
+    </p>
+
+    <p>
+        Short URL:
+        <a th:href="${shortUrlResult}" th:text="${shortUrlResult}" target="_blank">http://localhost:8080/short-url-goes-here</a>
+    </p>
+</div>
+<div class="result" style="background-color: #f8d7da; border-color: #f5c6cb;" th:if="${aliasError != null}">
+    <p style="color: #721c24;" th:text="${aliasError}"></p>
+</div>
+<hr>
+<h2>Check Link Statistics</h2>
+<form th:action="@{/check-stats}" method="POST">
+    <div>
+        <label for="checkShortCode">Enter a short code to check its stats:</label>
+    </div>
+    <div>
+        <input type="text" id="checkShortCode" name="checkShortCode" size="20" placeholder="e.g., aB1cDe" required>
+    </div>
+    <div>
+        <input type="submit" value="Check Stats">
+    </div>
+</form>
+<div class="result" th:if="${urlStats != null}">
+    <h3>Statistics</h3>
+    <p><strong>Original URL:</strong> <span th:text="${urlStats.originalUrl}"></span></p>
+    <p><strong>Short URL:</strong> <a th:href="${urlStats.shortUrl}" th:text="${urlStats.shortUrl}" target="_blank"></a></p>
+    <p><strong>Created On:</strong> <span th:text="${#temporals.format(urlStats.creationDate, 'dd-MMM-yyyy HH:mm')}"></span></p>
+    <p><strong>Total Clicks:</strong> <span th:text="${urlStats.clickCount}"></span></p>
+</div>
+
+<div class="result" style="background-color: #f8d7da; border-color: #f5c6cb;" th:if="${statsError != null}">
+    <p style="color: #721c24;" th:text="${statsError}"></p>
+</div>
+
+</body>
+</html>
